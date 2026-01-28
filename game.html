@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🚦 لعبة الرّمّاز الذكي - HTML/CSS/JS</title>
+  <style>
+    :root{
+      --brand:#1e73be;
+      --brandDark:#15508f;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#dc2626;
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --border:#e5e7eb;
+      --text:#0f172a;
+      --muted:#64748b;
+      --shadow:0 10px 30px rgba(2,6,23,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(30,115,190,.10), transparent),
+                  radial-gradient(900px 500px at 80% 10%, rgba(14,165,233,.10), transparent),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:22px 16px 10px;
+      max-width:1100px;
+      margin:0 auto;
+    }
+    .title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .title h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+    main{
+      max-width:1100px;
+      margin:0 auto;
+      padding:12px 16px 28px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .pill strong{color:var(--text)}
+    .select{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:14px;
+      outline:none;
+    }
+    .select:focus{border-color:rgba(30,115,190,.5); box-shadow:0 0 0 4px rgba(30,115,190,.12)}
+    .scenario{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:14px;
+      align-items:stretch;
+      margin-top:12px;
+    }
+    @media (max-width: 520px){
+      .scenario{grid-template-columns:1fr}
+    }
+    .light{
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#0b1220;
+      padding:14px;
+      display:grid;
+      place-items:center;
+      min-height:190px;
+      position:relative;
+      overflow:hidden;
+    }
+    .light::before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.08), transparent 55%),
+                  radial-gradient(circle at 70% 70%, rgba(255,255,255,.05), transparent 60%);
+      transform:rotate(8deg);
+    }
+    .bulbs{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:10px;
+    }
+    .bulb{
+      width:64px; height:64px;
+      border-radius:50%;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow: inset 0 0 0 6px rgba(0,0,0,.18);
+    }
+    .bulb.on.red{background: radial-gradient(circle at 30% 30%, #fff, #ff4d4d 35%, #b20000 70%);}
+    .bulb.on.yellow{background: radial-gradient(circle at 30% 30%, #fff, #ffe58a 35%, #c58a00 70%);}
+    .bulb.on.green{background: radial-gradient(circle at 30% 30%, #fff, #66ff9d 35%, #007a3a 70%);}
+
+    .facts{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      background:linear-gradient(180deg, rgba(30,115,190,.06), transparent 60%);
+    }
+    .facts h2{
+      margin:0 0 10px;
+      font-size:16px;
+    }
+    .facts ul{
+      margin:0;
+      padding:0 18px 0 0;
+      color:var(--text);
+      line-height:1.9;
+      font-size:14px;
+    }
+    .muted{color:var(--muted)}
+    .actions{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .actions{grid-template-columns:1fr 1fr}
+    }
+    button{
+      border:none;
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:15px;
+      cursor:pointer;
+      font-weight:700;
+      transition:.12s transform ease, .12s filter ease;
+    }
+    button:active{transform:translateY(1px)}
+    .btnStop{background:rgba(220,38,38,.12); color:var(--bad); border:1px solid rgba(220,38,38,.28)}
+    .btnSlow{background:rgba(245,158,11,.14); color:#9a5b00; border:1px solid rgba(245,158,11,.32)}
+    .btnGo{background:rgba(22,163,74,.12); color:var(--ok); border:1px solid rgba(22,163,74,.28)}
+    .btnTicket{background:rgba(30,115,190,.12); color:var(--brandDark); border:1px solid rgba(30,115,190,.30)}
+    .btnSecondary{
+      background:#fff;
+      border:1px solid var(--border);
+      color:var(--text);
+      font-weight:700;
+      padding:10px 12px;
+      border-radius:12px;
+    }
+    .sidebar h3{margin:0 0 10px; font-size:16px}
+    .rules{
+      border-top:1px dashed var(--border);
+      margin-top:12px;
+      padding-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.7;
+    }
+    .kpis{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .kpi{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+      background:#fff;
+    }
+    .kpi .label{color:var(--muted); font-size:12px}
+    .kpi .value{font-size:18px; font-weight:800; margin-top:6px}
+    .footerRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .hint{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* Modal */
+    .modalWrap{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:50;
+    }
+    .modal{
+      width:min(560px, 100%);
+      background:#fff;
+      border-radius:22px;
+      border:1px solid var(--border);
+      box-shadow:0 20px 60px rgba(2,6,23,.35);
+      padding:16px;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .badge{
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:13px;
+    }
+    .badge.ok{background:rgba(22,163,74,.12); color:var(--ok); border:1px solid rgba(22,163,74,.28)}
+    .badge.bad{background:rgba(220,38,38,.12); color:var(--bad); border:1px solid rgba(220,38,38,.28)}
+    .modal p{
+      margin:10px 0 0;
+      line-height:1.8;
+      color:var(--text);
+      font-size:14px;
+    }
+    .modalActions{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <h1>🚦 لعبة الرّمّاز الذكي</h1>
+      <span class="pill"><strong id="stageLabel">المرحلة 1</strong> <span class="muted">/ 8</span></span>
+      <span class="pill">🔢 <strong id="roundLabel">الجولة 1</strong></span>
+      <span class="pill">⭐ <strong id="scoreLabel">0</strong></span>
+    </div>
+    <p class="subtitle">
+      اختر القرار الصحيح حسب قواعد المرحلة. هذه اللعبة تدرّبك على: if / elif / AND / OR / الشروط المتداخلة.
+    </p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <!-- Game -->
+      <section class="card">
+        <div class="row">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+            <label class="muted" for="stageSelect" style="font-size:13px">اختر المرحلة:</label>
+            <select id="stageSelect" class="select" aria-label="اختر المرحلة">
+              <option value="1">المرحلة 1 (شرط بسيط)</option>
+              <option value="2">المرحلة 2 (elif)</option>
+              <option value="3">المرحلة 3 (مقارنة رقمية)</option>
+              <option value="4">المرحلة 4 (AND)</option>
+              <option value="5">المرحلة 5 (OR)</option>
+              <option value="6">المرحلة 6 (نطاق سرعة)</option>
+              <option value="7">المرحلة 7 (Nested)</option>
+              <option value="8">المرحلة 8 (التحدي النهائي)</option>
+            </select>
+
+            <button id="newBtn" class="btnSecondary" type="button">🔄 حالة جديدة</button>
+          </div>
+
+          <div class="pill" title="وضع الصف">
+            🧑‍🏫 <strong>مناسب للمدرسة</strong> <span class="muted">— بدون إنترنت</span>
+          </div>
+        </div>
+
+        <div class="scenario">
+          <div class="light" aria-label="إشارة المرور">
+            <div class="bulbs">
+              <div class="bulb" id="bulbRed"></div>
+              <div class="bulb" id="bulbYellow"></div>
+              <div class="bulb" id="bulbGreen"></div>
+            </div>
+          </div>
+
+          <div class="facts">
+            <h2>🧾 معلومات الحالة</h2>
+            <ul>
+              <li>لون الإشارة: <strong id="factColor">—</strong></li>
+              <li>سرعة السيارة: <strong id="factSpeed">—</strong> كم/س</li>
+              <li>يوجد إسعاف؟ <strong id="factAmb">—</strong></li>
+              <li>يوجد شرطة؟ <strong id="factPolice">—</strong></li>
+            </ul>
+            <div class="actions" role="group" aria-label="اختيار القرار">
+              <button class="btnStop"   id="btnStop"   type="button">🛑 توقف</button>
+              <button class="btnSlow"   id="btnSlow"   type="button">⚠️ اهدأ</button>
+              <button class="btnGo"     id="btnGo"     type="button">✅ امشِ</button>
+              <button class="btnTicket" id="btnTicket" type="button">🧾 مخالفة</button>
+            </div>
+
+            <div class="footerRow">
+              <div class="hint" id="hintText">💡 تلميح: اقرأ قواعد المرحلة من اليمين.</div>
+              <button class="btnSecondary" id="resetBtn" type="button">🧹 إعادة ضبط</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="card sidebar">
+        <h3>📚 قواعد المرحلة الحالية</h3>
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">المرحلة</div>
+            <div class="value" id="kpiStage">1</div>
+          </div>
+          <div class="kpi">
+            <div class="label">أفضل نتيجة</div>
+            <div class="value" id="kpiBest">0</div>
+          </div>
+        </div>
+
+        <div class="rules" id="rulesBox"></div>
+
+        <div class="rules">
+          <strong>🎯 طريقة اللعب:</strong>
+          <div class="muted">
+            اضغط أحد الأزرار الأربعة (توقف/اهدأ/امشِ/مخالفة). إذا كان اختيارك صحيحًا تحصل على نقاط،
+            وإذا أخطأت ستظهر لك رسالة توضح السبب.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modalWrap" id="modalWrap" role="dialog" aria-modal="true" aria-label="نتيجة">
+    <div class="modal">
+      <div class="modalHeader">
+        <div id="modalBadge" class="badge ok">صحيح ✅</div>
+        <button class="btnSecondary" id="closeModalBtn" type="button">إغلاق</button>
+      </div>
+      <p id="modalText">—</p>
+      <div class="modalActions">
+        <button class="btnSecondary" id="nextBtn" type="button">التالي ➜</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------
+    //  Helpers
+    // ---------------------------
+    const $ = (id) => document.getElementById(id);
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const chance = (p) => Math.random() < p; // p between 0..1
+    const boolAr = (b) => b ? "نعم" : "لا";
+
+    const bulbs = {
+      red: $("bulbRed"),
+      yellow: $("bulbYellow"),
+      green: $("bulbGreen"),
+    };
+
+    function setLight(color){
+      bulbs.red.className = "bulb" + (color==="أحمر" ? " on red" : "");
+      bulbs.yellow.className = "bulb" + (color==="أصفر" ? " on yellow" : "");
+      bulbs.green.className = "bulb" + (color==="أخضر" ? " on green" : "");
+    }
+
+    // ---------------------------
+    //  Game State
+    // ---------------------------
+    const state = {
+      stage: 1,
+      round: 1,
+      score: 0,
+      best: 0,
+      scenario: null, // {color, speed, ambulance, police}
+    };
+
+    const rulesText = {
+      1: `المرحلة 1 (شرط بسيط):
+      - إذا كانت الإشارة <strong>أحمر</strong> ➜ <strong>توقف</strong>
+      - غير ذلك ➜ <strong>امشِ</strong>`,
+
+      2: `المرحلة 2 (elif):
+      - أحمر ➜ <strong>توقف</strong>
+      - أصفر ➜ <strong>اهدأ</strong>
+      - أخضر ➜ <strong>امشِ</strong>`,
+
+      3: `المرحلة 3 (مقارنة رقمية):
+      - إذا كانت السرعة ≤ 60 ➜ <strong>امشِ</strong>
+      - إذا كانت السرعة > 60 ➜ <strong>مخالفة</strong>`,
+
+      4: `المرحلة 4 (AND):
+      - إذا كانت الإشارة <strong>خضراء</strong> AND <strong>لا توجد شرطة</strong> ➜ <strong>امشِ</strong>
+      - غير ذلك ➜ <strong>توقف</strong>`,
+
+      5: `المرحلة 5 (OR):
+      - إذا يوجد <strong>إسعاف</strong> OR الإشارة <strong>خضراء</strong> ➜ <strong>امشِ</strong>
+      - غير ذلك ➜ <strong>توقف</strong>`,
+
+      6: `المرحلة 6 (نطاق سرعة):
+      - إذا كانت السرعة بين 40 و 60 (شاملة) ➜ <strong>امشِ</strong>
+      - غير ذلك ➜ <strong>اهدأ</strong>`,
+
+      7: `المرحلة 7 (Nested شروط متداخلة):
+      - إذا كانت الإشارة <strong>خضراء</strong>:
+        - إذا السرعة ≤ 60 ➜ <strong>امشِ</strong>
+        - غير ذلك ➜ <strong>مخالفة</strong>
+      - غير ذلك ➜ <strong>توقف</strong>`,
+
+      8: `المرحلة 8 (التحدّي النهائي):
+      - إذا يوجد <strong>إسعاف</strong> ➜ <strong>امشِ</strong> (أولوية)
+      - وإلا إذا (خضراء AND السرعة ≤ 60 AND لا توجد شرطة) ➜ <strong>امشِ</strong>
+      - وإلا إذا (أصفر AND السرعة بين 30 و 50) ➜ <strong>اهدأ</strong>
+      - وإلا إذا (السرعة > 70) ➜ <strong>مخالفة</strong>
+      - غير ذلك ➜ <strong>توقف</strong>`
+    };
+
+    function computeCorrectDecision(stage, s){
+      const { color, speed, ambulance, police } = s;
+
+      if(stage === 1){
+        return (color === "أحمر") ? "توقف" : "امشِ";
+      }
+      if(stage === 2){
+        if(color === "أحمر") return "توقف";
+        if(color === "أصفر") return "اهدأ";
+        return "امشِ";
+      }
+      if(stage === 3){
+        return (speed <= 60) ? "امشِ" : "مخالفة";
+      }
+      if(stage === 4){
+        return (color === "أخضر" && !police) ? "امشِ" : "توقف";
+      }
+      if(stage === 5){
+        return (ambulance || color === "أخضر") ? "امشِ" : "توقف";
+      }
+      if(stage === 6){
+        return (speed >= 40 && speed <= 60) ? "امشِ" : "اهدأ";
+      }
+      if(stage === 7){
+        if(color === "أخضر"){
+          return (speed <= 60) ? "امشِ" : "مخالفة";
+        }
+        return "توقف";
+      }
+      // stage 8
+      if(ambulance){
+        return "امشِ";
+      } else if(color === "أخضر" && speed <= 60 && !police){
+        return "امشِ";
+      } else if(color === "أصفر" && speed >= 30 && speed <= 50){
+        return "اهدأ";
+      } else if(speed > 70){
+        return "مخالفة";
+      } else {
+        return "توقف";
+      }
+    }
+
+    function why(stage, s, correct){
+      const { color, speed, ambulance, police } = s;
+      const c = correct;
+
+      // تفسير بسيط حسب المرحلة
+      if(stage === 1){
+        return (color==="أحمر")
+          ? "لأن الإشارة حمراء، والقاعدة تقول: أحمر ➜ توقف."
+          : "لأنها ليست حمراء، والقاعدة تقول: غير ذلك ➜ امشِ.";
+      }
+      if(stage === 2){
+        return `القاعدة هنا تعتمد على لون الإشارة: أحمر=توقف، أصفر=اهدأ، أخضر=امشِ.`;
+      }
+      if(stage === 3){
+        return (speed <= 60)
+          ? `السرعة ${speed} ≤ 60، إذن القرار: امشِ.`
+          : `السرعة ${speed} > 60، إذن القرار: مخالفة.`;
+      }
+      if(stage === 4){
+        return (color==="أخضر" && !police)
+          ? "الإشارة خضراء ولا توجد شرطة، (AND) تحقق ➜ امشِ."
+          : "شرط (AND) لم يتحقق (إما ليست خضراء أو توجد شرطة) ➜ توقف.";
+      }
+      if(stage === 5){
+        return (s.ambulance || color==="أخضر")
+          ? "يوجد إسعاف أو الإشارة خضراء، شرط (OR) تحقق ➜ امشِ."
+          : "لا يوجد إسعاف والإشارة ليست خضراء، شرط (OR) لم يتحقق ➜ توقف.";
+      }
+      if(stage === 6){
+        return (speed>=40 && speed<=60)
+          ? `السرعة داخل النطاق 40..60 ➜ امشِ.`
+          : `السرعة خارج النطاق 40..60 ➜ اهدأ.`;
+      }
+      if(stage === 7){
+        return (color==="أخضر")
+          ? (speed<=60 ? "إشارة خضراء ثم سرعة ≤ 60 ➜ امشِ." : "إشارة خضراء لكن سرعة > 60 ➜ مخالفة.")
+          : "الإشارة ليست خضراء ➜ توقف.";
+      }
+      // stage 8
+      if(ambulance) return "لأن هناك إسعاف، له أولوية: امشِ.";
+      if(color==="أخضر" && speed<=60 && !police) return "خضراء + سرعة ≤ 60 + لا شرطة (AND) ➜ امشِ.";
+      if(color==="أصفر" && speed>=30 && speed<=50) return "أصفر + سرعة 30..50 ➜ اهدأ.";
+      if(speed>70) return "السرعة > 70 ➜ مخالفة.";
+      return "لم يتحقق أي شرط خاص، إذن القاعدة الأخيرة ➜ توقف.";
+    }
+
+    function generateScenario(stage){
+      // لتكون الحالات مفيدة تعليمياً، نتحكم قليلاً بالتوزيع
+      const colors = ["أحمر","أصفر","أخضر"];
+      const color = colors[randInt(0,2)];
+
+      // السرعة: في مراحل 3/6/7/8 نحتاج أرقام متنوّعة
+      let speed;
+      if([3,6,7,8].includes(stage)){
+        // اختيارات متنوّعة تشمل الحدود
+        const picks = [0, 20, 30, 39, 40, 50, 60, 61, 70, 71, 90, 100];
+        speed = picks[randInt(0, picks.length-1)];
+      } else {
+        speed = randInt(0, 100);
+      }
+
+      // إسعاف/شرطة: مفيدة في 4/5/8
+      const ambulance = chance(stage>=5 ? 0.35 : 0.20);
+      const police = chance(stage>=4 ? 0.35 : 0.20);
+
+      return { color, speed, ambulance, police };
+    }
+
+    function render(){
+      $("stageSelect").value = String(state.stage);
+      $("stageLabel").textContent = `المرحلة ${state.stage}`;
+      $("roundLabel").textContent = `الجولة ${state.round}`;
+      $("scoreLabel").textContent = String(state.score);
+
+      $("kpiStage").textContent = String(state.stage);
+      $("kpiBest").textContent = String(state.best);
+
+      $("rulesBox").innerHTML = rulesText[state.stage];
+
+      const s = state.scenario;
+      $("factColor").textContent = s.color;
+      $("factSpeed").textContent = String(s.speed);
+      $("factAmb").textContent = boolAr(s.ambulance);
+      $("factPolice").textContent = boolAr(s.police);
+
+      setLight(s.color);
+
+      // تلميح بسيط حسب المرحلة
+      const hintMap = {
+        1: "جرّب تحويلها إلى if/else بسيط.",
+        2: "هنا نستخدم if ثم elif ثم else.",
+        3: "ركز على مقارنة رقمية: <= و >.",
+        4: "انتبه لشرط AND (لازم الشرطان معًا).",
+        5: "انتبه لشرط OR (يكفي شرط واحد).",
+        6: "هنا نستخدم نطاق: 40 <= speed <= 60.",
+        7: "Nested: شرط داخل شرط.",
+        8: "ابدأ بالأولوية (الإسعاف) ثم باقي الشروط."
+      };
+      $("hintText").textContent = "💡 تلميح: " + hintMap[state.stage];
+    }
+
+    function newRound(keepStage=false){
+      if(!keepStage) state.round += 1;
+      state.scenario = generateScenario(state.stage);
+      render();
+    }
+
+    // ---------------------------
+    //  Modal
+    // ---------------------------
+    function showModal(isOk, text){
+      const badge = $("modalBadge");
+      badge.className = "badge " + (isOk ? "ok" : "bad");
+      badge.textContent = isOk ? "صحيح ✅" : "خطأ ❌";
+      $("modalText").textContent = text;
+      $("modalWrap").style.display = "flex";
+    }
+    function closeModal(){
+      $("modalWrap").style.display = "none";
+    }
+
+    // ---------------------------
+    //  Game Logic: Answer
+    // ---------------------------
+    function answer(choice){
+      const s = state.scenario;
+      const correct = computeCorrectDecision(state.stage, s);
+
+      if(choice === correct){
+        // نقاط: كلما المرحلة أعلى نقاط أكثر
+        const gained = 5 + (state.stage-1) * 2;
+        state.score += gained;
+        if(state.score > state.best) state.best = state.score;
+
+        const explain = why(state.stage, s, correct);
+        showModal(true, `✅ ممتاز! القرار الصحيح هو: ${correct}. \n\nالسبب: ${explain}\n\n+${gained} نقطة`);
+        // انتقال تلقائي لمرحلة أعلى إذا نجح مرتين في نفس المرحلة (تبسيط)
+        state._winStreak = (state._winStreak || 0) + 1;
+        if(state._winStreak >= 2 && state.stage < 8){
+          state.stage += 1;
+          state._winStreak = 0;
+          $("nextBtn").textContent = "المرحلة التالية ➜";
+        } else {
+          $("nextBtn").textContent = "التالي ➜";
+        }
+      } else {
+        // عقوبة بسيطة
+        state.score = Math.max(0, state.score - 3);
+        const explain = why(state.stage, s, correct);
+        showModal(false, `❌ اختيارك: ${choice}\n✅ الصحيح: ${correct}\n\nالسبب: ${explain}\n\n-3 نقاط (للتعلّم 😉)`);
+        state._winStreak = 0;
+        $("nextBtn").textContent = "حالة جديدة ➜";
+      }
+
+      render();
+    }
+
+    // ---------------------------
+    //  Events
+    // ---------------------------
+    $("btnStop").addEventListener("click", () => answer("توقف"));
+    $("btnSlow").addEventListener("click", () => answer("اهدأ"));
+    $("btnGo").addEventListener("click", () => answer("امشِ"));
+    $("btnTicket").addEventListener("click", () => answer("مخالفة"));
+
+    $("newBtn").addEventListener("click", () => newRound(true));
+    $("resetBtn").addEventListener("click", () => {
+      state.stage = 1;
+      state.round = 1;
+      state.score = 0;
+      state._winStreak = 0;
+      state.scenario = generateScenario(state.stage);
+      render();
+      showModal(true, "تمت إعادة الضبط ✅ ابدأ من المرحلة 1.");
+    });
+
+    $("stageSelect").addEventListener("change", (e) => {
+      state.stage = parseInt(e.target.value, 10);
+      state._winStreak = 0;
+      state.scenario = generateScenario(state.stage);
+      render();
+    });
+
+    $("closeModalBtn").addEventListener("click", closeModal);
+    $("modalWrap").addEventListener("click", (e) => {
+      if(e.target === $("modalWrap")) closeModal();
+    });
+    $("nextBtn").addEventListener("click", () => {
+      closeModal();
+      // بعد إغلاق النتيجة: جولة جديدة
+      state.round += 1;
+      state.scenario = generateScenario(state.stage);
+      render();
+    });
+
+    // Start
+    state.scenario = generateScenario(state.stage);
+    render();
+  </script>
+</body>
+</html>
